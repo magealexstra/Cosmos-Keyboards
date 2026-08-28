@@ -9,7 +9,13 @@ import { makeAsyncCacher } from './cacher'
 import loadGLTF from './gltfLoader'
 
 const cacher = makeAsyncCacher(async (key: string, rotate: boolean) => {
-  let geo = await loadGLTF(`/target/key-${key}.glb`)
+  let geo: BufferGeometry
+  try {
+    geo = await loadGLTF(`/target/key-${key}.glb`)
+  } catch (e) {
+    console.warn(`Could not load keycap model /target/key-${key}.glb:`, e)
+    geo = new SphereGeometry(8, 16, 16)
+  }
   if (rotate) geo = geo.clone().applyQuaternion(new Quaternion().setFromAxisAngle(new Vector3(0, 0, 1), Math.PI / 2))
   return makeUv(geo)
 })
