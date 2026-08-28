@@ -9,7 +9,10 @@
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-kit sync && node --import ./src/model_gen/register_loader.js src/scripts/check.ts",
-    "test": "bun test",
+    "test": "node src/scripts/test-runner.js",
+    "proto:build": "make build",
+    "parts:build": "make parts parts-simple",
+    "keycaps:build": "make keycaps2 keycaps-simple2",
     "prepare": "npx simple-git-hooks",
     "make": "bun src/scripts/mini-make.js",
     "nodemake": "node src/scripts/mini-make.js"

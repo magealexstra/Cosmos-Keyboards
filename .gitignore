@@ -17,3 +17,7 @@ __pycache__
 *.kra
 plum-twist
 src/routes/lemon
+CLAUDE.md
+.claude
+quests/
+.directory

@@ -15,22 +15,28 @@ endif
 target/openscad:
 	$(NODE) src/model_gen/download-openscad.ts
 
-target/proto/manuform.ts: src/proto/manuform.proto
+target/proto:
+	mkdir -p target/proto
+
+.svelte-kit:
+	$(NPX) svelte-kit sync
+
+target/proto/manuform.ts: src/proto/manuform.proto | target/proto
 	$(NPX) protoc --ts_out target --proto_path src $<
 
-target/proto/cuttleform.ts: src/proto/cuttleform.proto
+target/proto/cuttleform.ts: src/proto/cuttleform.proto | target/proto
 	$(NPX) protoc --ts_out target --proto_path src $<
 
-target/proto/lightcycle.ts: src/proto/lightcycle.proto
+target/proto/lightcycle.ts: src/proto/lightcycle.proto | target/proto
 	$(NPX) protoc --ts_out target --proto_path src $<
 
-target/proto/cosmos.ts: src/proto/cosmos.proto
+target/proto/cosmos.ts: src/proto/cosmos.proto | target/proto
 	$(NPX) protoc --ts_out target --proto_path src $<
 
-target/editorDeclarations.d.ts: src/lib/worker/config.ts src/lib/worker/modeling/transformation-ext.ts target/cosmosStructs.ts
+target/editorDeclarations.d.ts: src/lib/worker/config.ts src/lib/worker/modeling/transformation-ext.ts target/cosmosStructs.ts | .svelte-kit
 	$(NODE) src/model_gen/genEditorTypes.ts
 
-target/cosmosStructs.ts: src/proto/cosmosStructs.ts src/lib/geometry/socketsParts.ts
+target/cosmosStructs.ts: src/proto/cosmosStructs.ts src/lib/geometry/socketsParts.ts | .svelte-kit
 	$(NODE) src/proto/cosmosStructs.ts
 
 target/KeyV2:

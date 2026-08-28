@@ -6,23 +6,29 @@ import type { User } from '../routes/beta/lib/login'
 import type { ColorScheme } from './3d/materials'
 import type { ConfErrors } from './worker/check'
 
-export type TempConfig = CosmosKeyboard & { fromProto: boolean }
+import { editorStore, type ReferenceModelEntry, type TempConfig } from './stores/editorStore'
 
-export const protoConfig = writable<CosmosKeyboard>(undefined)
-export const tempConfig = writable<TempConfig>(undefined)
-export const confError = writable<ConfErrors>([])
-export const showErrorMsg = writable<boolean>(false)
-protoConfig.subscribe(c => tempConfig.set(c ? { ...c, fromProto: true } : c))
-export const transformMode = writable<'translate' | 'rotate' | 'select'>('select')
-export const selectMode = writable<'key' | 'column' | 'cluster'>('key')
+export { editorStore, type ReferenceModelEntry, type TempConfig }
+
+export const protoConfig = editorStore.protoConfig
+export const tempConfig = editorStore.tempConfig
+export const confError = editorStore.confError
+export const showErrorMsg = editorStore.showErrorMsg
+export const transformMode = editorStore.transformMode
+export const selectMode = editorStore.selectMode
 export const user = writable<User>({ success: false, sponsor: undefined })
-export const codeError = writable<Error | null>(null)
-export const openSelect = writable<symbol | null>(null)
+export const codeError = editorStore.codeError
+export const openSelect = editorStore.openSelect
 
-export const hoveredKey = writable<number | null>(null)
-export const clickedKey = writable<number | null>(null)
-export const clickedSide = writable<'left' | 'right' | 'unibody' | 'center' | null>(null)
-export const lastKeycap = writable<number>(0)
+export const hoveredKey = editorStore.hoveredKey
+export const clickedKey = editorStore.clickedKey
+export const clickedSide = editorStore.clickedSide
+export const lastKeycap = editorStore.lastKeycap
+
+export const canUndo = editorStore.canUndo
+export const canRedo = editorStore.canRedo
+export const historyLength = editorStore.historyLength
+export const historyStore = editorStore.history
 
 // --- Alerts -----------------------------------------------------------------
 //
@@ -54,12 +60,12 @@ export function dismissAlert(id: symbol) {
   alerts.update(xs => xs.filter(a => a.id !== id))
 }
 
-export const showGrid = writable(false)
-export const noWall = writable(false)
-export const noBase = writable(false)
-export const noBlanks = writable(false)
-export const noLabels = writable(false)
-export const referenceModels = writable<{ id: number; name: string; geometry: BufferGeometry; matrix: Matrix4 }[]>([])
+export const showGrid = editorStore.showGrid
+export const noWall = editorStore.noWall
+export const noBase = editorStore.noBase
+export const noBlanks = editorStore.noBlanks
+export const noLabels = editorStore.noLabels
+export const referenceModels = editorStore.referenceModels
 
 // Preferences
 export const theme = storable<ColorScheme>('theme', 'purple')

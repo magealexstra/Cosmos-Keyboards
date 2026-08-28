@@ -24,7 +24,7 @@ interface SvelteCheckDiagnostic {
  * parse its output, and display the results using Node.js's child_process.
  */
 async function runSvelteCheckParser() {
-  console.log('🚀 Starting svelte-check...')
+  console.log('\x1b[1m\x1b[34m[ CHECK ]\x1b[0m Starting svelte-check...')
 
   // A map to store diagnostics, grouped by their filename.
   const errorsByFile = new Map<string, SvelteCheckDiagnostic[]>()
@@ -96,7 +96,7 @@ async function runSvelteCheckParser() {
 
       // --- Output Formatting ---
       if (errorsByFile.size === 0) {
-        console.log('\n✅ No relevant errors found!')
+        console.log('\n\x1b[1m\x1b[32m[ OK ]\x1b[0m No relevant errors found!')
       } else {
         // 2. Print the summary table.
         console.log('\n--- Error Summary ---')

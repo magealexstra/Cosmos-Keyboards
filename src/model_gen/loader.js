@@ -5,10 +5,10 @@
  * as well as getting the extensions correct.
  */
 
-import { statSync } from 'node:fs'
-import { pathToFileURL } from 'node:url'
+import { existsSync, readFileSync, statSync } from 'node:fs'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import * as tsConfigPaths from 'tsconfig-paths'
-// @ts-ignore: Tyescript doesn't recognize @swc-node/register/esm
+// @ts-ignore: Typescript doesn't recognize @swc-node/register/esm
 import { load as loadTs, resolve as resolveTs } from '@swc-node/register/esm'
 
 const config = tsConfigPaths.loadConfig('.svelte-kit')
@@ -21,24 +21,40 @@ const matchPath = tsConfigPaths.createMatchPath(config.absoluteBaseUrl, config.p
  * @param {any} defaultResolver The resolver to fall back to
  */
 export function resolve(specifier, context, defaultResolver) {
-  const mappedSpecifier = matchPath(specifier)
-  if (mappedSpecifier) {
-    // On Windows, Node.js expects absolute paths to be file:// urls
-    // mappedSpecifier is an absolute path
-    // tsconfig-paths returns directory paths verbatim, so resolve `foo` →
-    // `foo/index` when `foo` is a directory before appending the extension.
-    const resolvedPath = isDirectory(mappedSpecifier) ? `${mappedSpecifier}/index` : mappedSpecifier
-    const url = pathToFileURL(resolvedPath).href
-    specifier = url.endsWith('.json') ? url : `${url}.js`
-  } else if (
-    !specifier.endsWith('.ts') && !specifier.endsWith('.js')
-    && !specifier.endsWith('.cjs')
-    && (specifier.includes('three/') || specifier.includes('./'))
-    && (!specifier.endsWith('?url'))
-  ) {
-    specifier = specifier + '.js'
+  if (specifier === 'bun:test') {
+    return {
+      format: 'module',
+      shortCircuit: true,
+      url: new URL('../scripts/bun-test-shim.js', import.meta.url).href,
+    }
   }
-  if (specifier.includes('$assets')) throw new Error(matchPath(specifier.replace('?url', '')))
+
+  const mappedSpecifier = matchPath(specifier.replace('?url', ''))
+  if (mappedSpecifier) {
+    const resolvedPath = isDirectory(mappedSpecifier) ? `${mappedSpecifier}/index` : mappedSpecifier
+    let target = resolvedPath
+    if (
+      !target.endsWith('.json') && !target.endsWith('.ts') && !target.endsWith('.js') && !target.endsWith('.zip') && !target.endsWith('.stl') && !target.endsWith('.step') && !target.endsWith('.svg')
+      && !target.endsWith('.png')
+    ) {
+      if (existsSync(`${target}.ts`)) target = `${target}.ts`
+      else if (existsSync(`${target}.js`)) target = `${target}.js`
+    }
+    const url = pathToFileURL(target).href
+    specifier = url
+  } else if (specifier.startsWith('.')) {
+    const parent = context.parentURL || pathToFileURL('./index.js').href
+    const cleanSpecifier = specifier.replace('?url', '')
+    const rawUrl = new URL(cleanSpecifier, parent).href
+    let filePath = fileURLToPath(rawUrl)
+    if (!existsSync(filePath)) {
+      if (existsSync(`${filePath}.ts`)) filePath = `${filePath}.ts`
+      else if (existsSync(`${filePath}.js`)) filePath = `${filePath}.js`
+      else if (existsSync(filePath.replace(/\.js$/, '.ts'))) filePath = filePath.replace(/\.js$/, '.ts')
+    }
+    specifier = pathToFileURL(filePath).href
+  }
+
   return resolveTs(specifier, context, defaultResolver)
 }
 
@@ -57,10 +73,21 @@ function isDirectory(absPath) {
  * @param {any} nextLoad The loader to fall back to
  */
 export async function load(url, context, nextLoad) {
-  if (url.includes('?url')) {
+  if (url.endsWith('.json')) {
+    const filePath = fileURLToPath(url)
+    const content = readFileSync(filePath, 'utf-8')
     return {
       format: 'module',
-      source: `export default "${url.replace('?url', '')}"`,
+      source: `export default ${content}`,
+      shortCircuit: true,
+    }
+  }
+  if (url.includes('?url') || url.endsWith('.zip') || url.endsWith('.png') || url.endsWith('.jpg') || url.endsWith('.svg') || url.endsWith('.stl') || url.endsWith('.step')) {
+    const cleanUrl = url.replace('?url', '')
+    const filePath = cleanUrl.startsWith('file://') ? fileURLToPath(cleanUrl) : cleanUrl
+    return {
+      format: 'module',
+      source: `export default "${filePath}"`,
       shortCircuit: true,
     }
   }
