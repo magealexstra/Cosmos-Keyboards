@@ -106,7 +106,7 @@
   let connectorView = false
   let sizeEditView = false
 
-  $: protoConfig.set(cosmosConf)
+  $: if (cosmosConf && !$protoConfig) protoConfig.set(cosmosConf)
   $: conf = fromCosmosConfig($protoConfig)
 
   const UNIBODY_SEPARATION = 30

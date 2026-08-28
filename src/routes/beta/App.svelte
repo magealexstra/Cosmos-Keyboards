@@ -24,6 +24,9 @@
   import { deserialize } from './lib/serialize'
 
   let state: State = getInitialState(browser ? location.hash.substring(1) : '')
+  if (state.options) {
+    protoConfig.set(state.options)
+  }
   let initialEditorContent = state.content
   let editorContent: string = ''
   let mode = state.content ? 'advanced' : 'basic'
@@ -43,6 +46,10 @@
   let lemonSwitch = false
   let referenceModelInput: HTMLInputElement
   let config: FullCuttleform
+
+  $: if (mode != 'advanced' && $protoConfig) {
+    config = fromCosmosConfig($protoConfig)
+  }
 
   let unbindShortcuts: (() => void) | undefined
 
