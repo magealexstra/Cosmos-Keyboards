@@ -5,6 +5,8 @@
   export let small = false
   export let inherit: number | undefined
   export let divisor = 45
+  export let id: string = ''
+  export let name: string = 'angle-input'
   $: tempValue = value
 
   const dispatch = createEventDispatcher()
@@ -26,6 +28,8 @@
 
 <div class="relative">
   <input
+    id={id || undefined}
+    {name}
     class="input {small ? 'w-[5.4rem]' : 'w-44 mx-2 px-2'}"
     class:text-yellow!={typeof tempValue === 'undefined'}
     type="number"

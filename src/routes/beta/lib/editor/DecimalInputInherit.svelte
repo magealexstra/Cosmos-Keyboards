@@ -7,6 +7,8 @@
   export let divisor = 10
   export let inherit: number | undefined
   export let noColor = false
+  export let id: string = ''
+  export let name: string = 'decimal-input'
   let clazz = ''
   $: tempValue = value
 
@@ -32,6 +34,8 @@
 {#if units}
   <div class="relative">
     <input
+      id={id || undefined}
+      {name}
       class="input {clazz ? clazz : small ? 'w-[5.4rem]' : 'w-44'}"
       class:text-yellow!={!noColor && typeof tempValue === 'undefined'}
       type="number"
@@ -44,6 +48,8 @@
   </div>
 {:else}
   <input
+    id={id || undefined}
+    {name}
     class="input {clazz ? clazz : small ? 'w-[5.4rem]' : 'w-44'}"
     class:text-yellow!={!noColor && typeof tempValue === 'undefined'}
     type="number"

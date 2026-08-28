@@ -7,6 +7,8 @@
   export let units = ''
   export let divisor = 10
   export let multiplier = 1
+  export let id: string = ''
+  export let name: string = 'decimal-input'
   let clazz = ''
 
   export { clazz as class }
@@ -25,6 +27,8 @@
 {#if units}
   <div class="relative">
     <input
+      id={id || undefined}
+      {name}
       class="input {clazz ? clazz : small ? 'w-[5.4rem]' : 'w-44'}"
       type="number"
       value={rounded}
@@ -34,9 +38,17 @@
     <span class="text-right absolute top-0 bottom-0 right-9 w-8 input-units">{units}</span>
   </div>
 {:else if supersmall}
-  <input class="input appearance-none w-14 ml-1!" value={rounded} on:change={onChange} />
+  <input
+    id={id || undefined}
+    {name}
+    class="input appearance-none w-14 ml-1!"
+    value={rounded}
+    on:change={onChange}
+  />
 {:else}
   <input
+    id={id || undefined}
+    {name}
     class="input {clazz ? clazz : small ? 'w-[5.4rem]' : 'w-44'}"
     type="number"
     value={rounded}

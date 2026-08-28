@@ -4,6 +4,8 @@
   export let value: number | undefined
   export let small = false
   export let divisor = 45
+  export let id: string = ''
+  export let name: string = 'angle-input'
 
   const dispatch = createEventDispatcher()
 
@@ -17,6 +19,8 @@
 
 <div class="relative">
   <input
+    id={id || undefined}
+    {name}
     class="input {small ? 'w-[5.4rem]' : 'w-44'}"
     type="number"
     min="-179"

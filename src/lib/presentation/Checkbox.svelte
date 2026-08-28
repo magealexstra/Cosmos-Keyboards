@@ -5,9 +5,18 @@
   export let basic = false
   export let small = false
   export let purple = false
+  export let id: string = ''
+  export let name: string = 'checkbox-input'
 </script>
 
-<input class="opacity-0 absolute h-0 w-0" type="checkbox" bind:checked={value} on:change />
+<input
+  id={id || undefined}
+  {name}
+  class="opacity-0 absolute h-0 w-0"
+  type="checkbox"
+  bind:checked={value}
+  on:change
+/>
 <div class="inline-block {basic ? '' : 'w-44'} text-left px-2 flex-none">
   <div
     class="input-basic rounded flex flex-shrink-0 justify-center items-center checkbox"
